@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "註冊";
+}
+
+<h2>使用者註冊</h2>
+
+<form asp-action="Register" method="post" id="registerForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label for="userName" class="form-label">帳號</label>
+        <input type="text" name="userName" id="userName" class="form-control" placeholder="請輸入帳號" required />
+        <span id="userNameFeedback" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">密碼</label>
+        <input type="password" name="password" class="form-control" placeholder="請輸入密碼" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="name" class="form-label">姓名</label>
+        <input type="text" name="name" class="form-control" placeholder="請輸入姓名" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" placeholder="請輸入Email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="role" class="form-label">角色</label>
+        <select name="role" class="form-select" required>
+            <option value="">請選擇角色</option>
+            @foreach (var r in ViewBag.Roles as List<string>)
+            {
+                <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">註冊</button>
+    <a class="btn btn-secondary" asp-action="Login">回登入頁</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var isUserNameAvailable = false;
+
+            $("#userName").on("blur", function() {
+                var userName = $(this).val().trim();
+                if (!userName) {
+                    $("#userNameFeedback").text("");
+                    isUserNameAvailable = false;
+                    return;
+                }
+
+                $.getJSON('@Url.Action("IsUserNameAvailable", "Account")', { userName: userName }, function(available) {
+                    if (available) {
+                        $("#userNameFeedback").text("帳號可用").removeClass("text-danger").addClass("text-success");
+                        isUserNameAvailable = true;
+                    } else {
+                        $("#userNameFeedback").text("此帳號已存在").removeClass("text-success").addClass("text-danger");
+                        isUserNameAvailable = false;
+                    }
+                });
+            });
+
+            $("#registerForm").on("submit", function(e) {
+                if (!isUserNameAvailable) {
+                    e.preventDefault();
+                    alert("帳號已存在或尚未驗證，請確認帳號後再註冊");
+                    $("#userName").focus();
+                }
+            });
+        });
+    </script>
+}

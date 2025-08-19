@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "首頁";
+    var user = HttpContextAccessor.HttpContext.User;
+    var roles = user.Claims
+                    .Where(c => c.Type == System.Security.Claims.ClaimTypes.Role)
+                    .Select(c => c.Value);
+}
+
+<h1 class="mb-4">歡迎來到學生管理系統</h1>
+
+@if (user.Identity.IsAuthenticated)
+{
+    <div class="alert alert-success">
+        <p>使用者: <strong>@user.Identity.Name</strong></p>
+        <p>角色: <strong>@string.Join(", ", roles)</strong></p>
+    </div>
+
+    <h4>快速功能</h4>
+    <div class="list-group mb-4">
+        <a asp-controller="Students" asp-action="Index" class="list-group-item list-group-item-action">
+            學生列表
+        </a>
+
+        @* 只有 Teacher 或 Admin 才能新增學生 *@
+        @if (roles.Contains("Teacher") || roles.Contains("Admin"))
+        {
+            <a asp-controller="Students" asp-action="Create" class="list-group-item list-group-item-action">
+                新增學生
+            </a>
+        }
+
+        @* Admin 才能刪除學生 (可導向列表頁再操作刪除) *@
+        @if (roles.Contains("Admin"))
+        {
+            <span class="list-group-item list-group-item-secondary">
+                管理員可刪除學生，請至 <a asp-controller="Students" asp-action="Index">學生列表</a> 操作。
+            </span>
+        }
+
+        <form asp-controller="Account" asp-action="Logout" method="post" class="mt-3 d-inline">
+            <button type="submit" class="btn btn-danger">登出</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="alert alert-info mb-3">
+        你尚未登入，請登入或註冊後使用系統功能。
+    </div>
+
+    <div class="mb-3">
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary me-2">登入</a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-success">註冊</a>
+    </div>
+}
