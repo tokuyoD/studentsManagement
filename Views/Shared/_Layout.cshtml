@@ -19,7 +19,28 @@
                 <a asp-controller="Home" asp-action="Index" class="me-3 text-dark text-decoration-none">首頁</a>
                 <a asp-controller="Home" asp-action="Privacy" class="me-3 text-dark text-decoration-none">Privacy</a>
                 <a asp-controller="Home" asp-action="LearnaboutASPNET" class="me-3 text-dark text-decoration-none">Learn about ASP.NET</a>
-                <a asp-controller="Students" asp-action="Index" class="me-3 text-dark text-decoration-none">學生列表</a>
+
+                @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                {
+                    var roles = HttpContextAccessor.HttpContext.User.Claims
+                                 .Where(c => c.Type == System.Security.Claims.ClaimTypes.Role)
+                                 .Select(c => c.Value);
+
+                    if (roles.Contains("Student"))
+                    {
+                        <a asp-controller="Students" asp-action="Index" class="me-3 text-dark text-decoration-none">我的課程</a>
+                    }
+                    if (roles.Contains("Teacher"))
+                    {
+                        <a asp-controller="Students" asp-action="Index" class="me-3 text-dark text-decoration-none">學生列表</a>
+                        <a asp-controller="Courses" asp-action="Manage" class="me-3 text-dark text-decoration-none">課程管理</a>
+                    }
+                    if (roles.Contains("Admin"))
+                    {
+                        <a asp-controller="Users" asp-action="Index" class="me-3 text-dark text-decoration-none">使用者管理</a>
+                        <a asp-controller="Roles" asp-action="Index" class="me-3 text-dark text-decoration-none">角色管理</a>
+                    }
+                }
             </div>
 
             <div>
@@ -41,6 +62,7 @@
                 else
                 {
                     <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm">登入</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-sm ms-2">註冊</a>
                 }
             </div>
         </nav>

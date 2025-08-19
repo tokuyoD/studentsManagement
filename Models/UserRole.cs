@@ -6,17 +6,16 @@ namespace StudentManagement.Models
     [Table("UserRoles")] // 對應資料表名稱
     public class UserRole
     {
-        [Key]
-        public int Id { get; set; }
-
-        // 對應 User
-        [ForeignKey("User")]
+        [Column("UserId")]
         public int UserId { get; set; }
+
+        [ForeignKey("UserId")]
         public User User { get; set; }
 
-        // 對應 Role
-        [ForeignKey("Role")]
+        [Column("RoleId")]
         public int RoleId { get; set; }
-        public Role Role { get; set; }  // Navigation property
+
+        [ForeignKey("RoleId")]
+        public Role Role { get; set; }
     }
 }

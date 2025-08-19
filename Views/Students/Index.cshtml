@@ -73,7 +73,32 @@
 
                     @if (User.IsInRole("Admin"))
                     {
-                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@s.Id">刪除</a>
+                        <!-- 刪除按鈕觸發 Modal -->
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-@s.Id">
+                            刪除
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteModal-@s.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@s.Id" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel-@s.Id">確認刪除</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ⚠️ 你確定要刪除學生 <strong>@s.Name</strong> 嗎？此操作無法復原！
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form asp-action="Delete" method="post">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <button type="submit" class="btn btn-danger">確認刪除</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     }
                 </td>
             </tr>
@@ -97,4 +122,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 }

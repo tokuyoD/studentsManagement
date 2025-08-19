@@ -55,6 +55,7 @@ namespace StudentManagement.Controllers
                 return View();
             }
 
+            // 建立 Claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName)
@@ -101,6 +102,7 @@ namespace StudentManagement.Controllers
                 return View();
             }
 
+            // 檢查帳號是否已存在
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             if (existingUser != null)
             {
@@ -111,6 +113,7 @@ namespace StudentManagement.Controllers
 
             string passwordHash = ComputeSha256Hash(password);
 
+            // 建立新使用者
             var newUser = new User
             {
                 UserName = userName,
@@ -122,10 +125,15 @@ namespace StudentManagement.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
+            // 對應角色
             var userRole = await _context.Role.FirstOrDefaultAsync(r => r.Name == role);
             if (userRole != null)
             {
-                _context.UserRoles.Add(new UserRole { UserId = newUser.UserId, RoleId = userRole.Id });
+                _context.UserRoles.Add(new UserRole
+                {
+                    UserId = newUser.UserId,
+                    RoleId = userRole.Id
+                });
                 await _context.SaveChangesAsync();
             }
 

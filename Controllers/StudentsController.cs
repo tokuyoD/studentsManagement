@@ -33,7 +33,7 @@ namespace StudentManagement.Controllers
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
             var students = await query
-                .OrderBy(s => s.Id) // EF Core 對應 Id
+                .OrderBy(s => s.Id) // 主鍵為 Id
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -74,18 +74,14 @@ namespace StudentManagement.Controllers
 
             try
             {
-                // EF Core 只插入 Name, Age, Email, Gender, Class
-                // Id 由資料庫自動生成
                 _context.Students.Add(student);
                 await _context.SaveChangesAsync();
-
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
             {
-                // 捕捉資料庫更新錯誤
                 ModelState.AddModelError("", "新增學生時發生錯誤，請稍後再試。");
-                Console.WriteLine(ex.Message); // 可選：方便除錯
+                Console.WriteLine(ex.Message);
                 return View(student);
             }
         }
@@ -137,11 +133,11 @@ namespace StudentManagement.Controllers
             return View(student);
         }
 
-        // POST: Students/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: Students/Delete
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var student = await _context.Students.FindAsync(id);
             if (student != null)
@@ -151,5 +147,6 @@ namespace StudentManagement.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

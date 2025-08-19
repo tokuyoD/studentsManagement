@@ -4,7 +4,7 @@
 
 <h2>使用者註冊</h2>
 
-<form asp-action="Register" method="post" id="registerForm">
+<form asp-action="Register" method="post" id="registerForm" novalidate>
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
     <div class="mb-3">
@@ -50,6 +50,7 @@
         $(document).ready(function() {
             var isUserNameAvailable = false;
 
+            // 即時檢查帳號是否可用
             $("#userName").on("blur", function() {
                 var userName = $(this).val().trim();
                 if (!userName) {
@@ -69,6 +70,7 @@
                 });
             });
 
+            // 提交表單前檢查帳號是否可用
             $("#registerForm").on("submit", function(e) {
                 if (!isUserNameAvailable) {
                     e.preventDefault();

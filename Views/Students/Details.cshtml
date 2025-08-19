@@ -38,23 +38,34 @@
             @(Model.Gender == "Male" ? "男" : Model.Gender == "Female" ? "女" : Model.Gender)
         </dd>
 
-       <dt class="col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Class)
         </dt>
         <dd class="col-sm-10">
             @{
-                var cls = Model.Class;
-                string formattedClass = cls;
-        
-                if (!string.IsNullOrEmpty(cls) && cls.Length >= 3)
+                string dept = "", year = "", clsSection = "";
+                if (!string.IsNullOrEmpty(Model.Class))
                 {
-                    var dept = cls.Substring(0, 2); // 系所，例如：資訊
-                    var year = cls.Substring(2, 1); // 年級，例如：一
-                    var section = cls.Length > 3 ? cls.Substring(3) : ""; // 班級，例如：A/班/甲
-                    formattedClass = $"{dept}系 {year}年級 {section}";
+                    int firstDigitIndex = -1;
+                    for (int i = 0; i < Model.Class.Length; i++)
+                    {
+                        if (char.IsDigit(Model.Class[i]))
+                        {
+                            firstDigitIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (firstDigitIndex >= 0)
+                    {
+                        dept = Model.Class.Substring(0, firstDigitIndex);        // 系所
+                        string rest = Model.Class.Substring(firstDigitIndex);
+                        year = rest.Substring(0, 1);                             // 年級
+                        clsSection = rest.Length > 1 ? rest.Substring(1) : "";   // 班別
+                    }
                 }
             }
-            @formattedClass
+            @($"{dept}系 {year}年級 {clsSection}")
         </dd>
 
         <dt class="col-sm-2">
