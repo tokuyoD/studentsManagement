@@ -1,0 +1,14 @@
+| Name                 | Value           |
+| -------------------- | --------------- |
+| Student              | 學生              |
+| Age                  | 年齡              |
+| Email                | Email           |
+| Gender               | 性別              |
+| Class                | 班級              |
+| Edit                 | 編輯              |
+| Delete               | 刪除              |
+| Details              | 詳細資料            |
+| Create               | 新增              |
+| Back                 | 返回              |
+| ConfirmDelete        | 確認刪除            |
+| DeleteConfirmMessage | 你確定要刪除學生 {0} 嗎？ |

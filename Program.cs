@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using StudentManagement.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// MVC
-builder.Services.AddControllersWithViews();
+// MVC + ViewLocalization + DataAnnotationsLocalization
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()              // Razor 頁面多語支援
+    .AddDataAnnotationsLocalization(); // 表單驗證訊息多語支援
 
 // Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -22,21 +27,32 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // HttpContextAccessor (供 Razor 判斷角色使用)
 builder.Services.AddHttpContextAccessor();
 
+// 支援的語系
+var supportedCultures = new[] { "zh-Hant", "en-US" };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var cultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.DefaultRequestCulture = new RequestCulture("zh-Hant");
+    options.SupportedCultures = cultures;
+    options.SupportedUICultures = cultures;
+});
+
 var app = builder.Build();
+
+// 啟用 RequestLocalization
+var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(locOptions);
 
 // 錯誤頁
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
-    // 開發環境暫時不要啟用 HTTPS 重導
-    // app.UseHttpsRedirection();
 }
 else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-    app.UseHttpsRedirection(); // 只在非開發環境啟用
+    app.UseHttpsRedirection();
 }
 
 // Middleware
