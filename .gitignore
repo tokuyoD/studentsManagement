@@ -1,9 +1,3 @@
-
----
-
-### 2️⃣ .gitignore
-
-```gitignore
 # Build 輸出資料夾
 bin/
 obj/
@@ -39,3 +33,5 @@ Desktop.ini
 
 # 本地資料庫連線設定
 appsettings.json
+*.mdf
+*.ldf
